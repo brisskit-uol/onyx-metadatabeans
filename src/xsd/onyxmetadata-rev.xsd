@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="http://brisskit.org/xml/onyxmetadata-rev/v1.0/rev"
+	xmlns="http://brisskit.org/xml/onyxmetadata-rev/v1.0/rev"
+	attributeFormDefault="unqualified" elementFormDefault="qualified"
+	xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	
+	<xs:element name="enumeratedVariable" type="revEnumeratedVariable" />
+
+	<xs:complexType name="revEnumeratedVariable">
+		<xs:sequence>
+			<xs:element type="revGroup" name="group" maxOccurs="unbounded" minOccurs="0" />
+			<xs:element type="revVariable" name="variable" maxOccurs="unbounded" minOccurs="0" />
+		</xs:sequence>
+		<xs:attribute type="xs:string" name="path" use="required"/>
+		<xs:attribute type="xs:string" name="name" use="required"/>
+		<xs:attribute type="revType" name="type" use="required"/>
+		<xs:attribute type="revCode" name="code" use="required"/>
+		<xs:attribute type="xs:string" name="hlevel" use="required"/>
+	</xs:complexType>
+	<xs:complexType name="revGroup">
+		<xs:sequence>
+			<xs:element type="revGroup" name="group" maxOccurs="unbounded" minOccurs="0" />
+			<xs:element type="revVariable" name="variable" maxOccurs="unbounded" minOccurs="1" />
+		</xs:sequence>
+		<xs:attribute type="xs:string" name="name" use="required"/>
+		<xs:attribute type="xs:string" name="description" use="optional"/>
+	</xs:complexType>
+	<xs:complexType name="revVariable">
+		<xs:attribute type="xs:string" name="name" use="required"/>
+		<xs:attribute type="xs:string" name="description" use="optional"/>
+		<xs:attribute type="revType" name="type" use="optional" />
+		<xs:attribute type="revCode" name="code" use="required"/>
+	</xs:complexType>
+	
+	<!--+
+	    | The whole of refType is deprecated and will be removed at some point in the future
+	    +-->
+	<xs:simpleType name="revType">
+		<xs:restriction base="xs:string">		
+			<!--+
+			    | These are Bricss specializations and will trigger concept enumerations
+			    +-->
+			<xs:enumeration value="AGE"/>
+			<xs:enumeration value="YEAR"/>
+			<xs:enumeration value="SHORTYEAR"/>
+			<xs:enumeration value="RECENTTIME"/>
+			<xs:enumeration value="HEARTRATE"/>
+			<xs:enumeration value="SYSTOLICBP"/>
+			<xs:enumeration value="DIASTOLICBP"/>
+			<xs:enumeration value="HEIGHT"/>
+			<xs:enumeration value="WEIGHT"/>
+			<xs:enumeration value="WAIST"/>
+			<xs:enumeration value="HIPS"/>
+			<xs:enumeration value="BICEPS"/>
+			<xs:enumeration value="TRICEPS"/>
+			<xs:enumeration value="SUBSCAPULAR"/>
+			<xs:enumeration value="SUPRAILIAC"/>
+			<xs:enumeration value="SMALLNUMBER"/>
+			<xs:enumeration value="ETHNICITY"/>
+			<xs:enumeration value="CIGARETTENUMBER"/>
+			<xs:enumeration value="CIGARNUMBER"/>
+			<xs:enumeration value="PIPENUMBER"/>
+			<xs:enumeration value="BEERNUMBER"/>
+			<xs:enumeration value="WINESPIRITNUMBER"/>
+			<xs:enumeration value="RELATIVESNUMBER"/>
+			<!-- Vital status was added as part of issue trac 94 -->
+			<xs:enumeration value="VITALSTATUS"/>
+			
+			<!--+
+			    | These are the standard Onyx data types, and most should be transformed
+			    | into one of the above, or designated as a FOLDER. However...
+			    | BOOLEAN: will form an enumerated concept (to be expected)
+			    | DATETIME: will form a start date or end date of an observation fact or visit
+			    | DECIMAL and INTEGER: are continuous variables and should either be stored as data
+			    |                      or recorded as would a labtest result.
+			    | TEXT: are another form of unrestricted data and should either be stored as data
+			    |       or recorded as would a labtest result.
+			    |       Could be stored within an observation fact or within patientrevdimension?
+			    | LOCALE: will probably be ignored.
+			    | DATA: Should be raised as a warning / error if encountered.           
+			    +-->
+			<xs:enumeration value="BOOLEAN"/>
+			<xs:enumeration value="DATA"/>
+			<xs:enumeration value="DATETIME"/>
+			<xs:enumeration value="DECIMAL"/>
+			<xs:enumeration value="INTEGER"/>
+			<xs:enumeration value="TEXT"/>
+			<xs:enumeration value="LOCALE"/>
+			<xs:enumeration value="BINARY"/>
+		</xs:restriction>	
+	</xs:simpleType>
+	<!--+
+	    | On the whole, Codes are attributable to bottom leaf variables only.
+	    +-->
+	<xs:simpleType name="revCode">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="5"/>
+			<xs:maxLength value="50"/>		
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>

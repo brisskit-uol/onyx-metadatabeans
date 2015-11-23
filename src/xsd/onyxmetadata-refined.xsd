@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="http://brisskit.org/xml/onyxmetadata-refined/v1.0/omr"
+	xmlns="http://brisskit.org/xml/onyxmetadata-refined/v1.0/omr"
+	attributeFormDefault="unqualified" elementFormDefault="qualified"
+	xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:element name="container" type="Container" />
+	<!--+
+	    | The Variable type has been extended and is hopefully backward compatible.
+	    |
+	    | It now can hold all of the critical data needed by the ontology cell's ontology table.
+	    | The extra data is held in the form of child elements and each is optional.
+	    | This extra data is not required for the CRC's ontology dimension.
+	    |
+	    | The idea is for this information to be provided if the concepts are NOT simple text enumerations
+	    | with observations held within the fact table. If they are indeed the latter, the relevant XSLT style sheet 
+	    | will provide any default SQL settings (eg: NULL).
+	    +-->
+	<xs:complexType name="Variable">
+		<xs:sequence>
+			<xs:element type="xs:string" name="metadataXml" maxOccurs="1" minOccurs="0" />
+			<xs:element type="FactTableColumn" name="factTableColumn" maxOccurs="1" minOccurs="0" />
+			<xs:element type="TableName" name="tableName" maxOccurs="1" minOccurs="0" />
+			<xs:element type="ColumnName" name="columnName" maxOccurs="1" minOccurs="0" />
+			<xs:element type="ColumnDataType" name="columnDataType" maxOccurs="1" minOccurs="0" />
+			<xs:element type="Operator" name="operator" maxOccurs="1" minOccurs="0" />
+			<xs:element type="DimCode" name="dimcode" maxOccurs="1" minOccurs="0" />
+			<xs:element type="ValueTypeCode" name="valueTypeCode" maxOccurs="1" minOccurs="0" />
+			<xs:element type="ModifierAppliedPath" name="modifierAppliedPath" maxOccurs="1" minOccurs="0" />
+			<xs:element type="ModifierExclusionCode" name="modifierExclusionCode" maxOccurs="1" minOccurs="0" />
+		</xs:sequence>
+		<xs:attribute type="xs:string" name="name" use="required"/>
+		<xs:attribute type="xs:string" name="description" use="optional"/>
+		<xs:attribute type="Type" name="type" use="required"/>
+		<xs:attribute type="Code" name="code" use="required"/>
+		<xs:attribute type="Synonym" name="synonym" use="optional" default="N" />
+	</xs:complexType>
+
+	<xs:simpleType name="Type">
+		<xs:restriction base="xs:string">		
+			<!--+
+			    | These are Bricss specializations and will trigger concept enumerations
+			    | 
+			    | The following have been deprecated in favour of the more generic type GENERATED_ENUMERATION
+			    | They will be removed at some time in the future.
+			    |
+			    +-->
+			<xs:enumeration value="AGE"/>
+			<xs:enumeration value="YEAR"/>
+			<xs:enumeration value="RECENTTIME"/>
+			<xs:enumeration value="HEARTRATE"/>
+			<xs:enumeration value="SYSTOLICBP"/>
+			<xs:enumeration value="DIASTOLICBP"/>
+			<xs:enumeration value="HEIGHT"/>
+			<xs:enumeration value="WEIGHT"/>
+			<xs:enumeration value="WAIST"/>
+			<xs:enumeration value="HIPS"/>
+			<xs:enumeration value="BICEPS"/>
+			<xs:enumeration value="TRICEPS"/>
+			<xs:enumeration value="SUBSCAPULAR"/>
+			<xs:enumeration value="SUPRAILIAC"/>
+			<xs:enumeration value="SMALLNUMBER"/>
+			<xs:enumeration value="ETHNICITY"/>
+			<xs:enumeration value="CIGARETTENUMBER"/>
+			<xs:enumeration value="CIGARNUMBER"/>
+			<xs:enumeration value="PIPENUMBER"/>
+			<xs:enumeration value="BEERNUMBER"/>
+			<xs:enumeration value="WINESPIRITNUMBER"/>
+			<xs:enumeration value="RELATIVESNUMBER"/>			
+			<!-- Vital status was added as part of issue trac 94 -->
+			<xs:enumeration value="VITALSTATUS"/>
+			
+			<!--+
+			    | GENERATED_ENUMERATION replaces all of the above types!
+			    |
+			    +-->
+			<xs:enumeration value="GENERATED_ENUMERATION"/>
+			
+			<!--+
+			    | These are the standard Onyx data types, and most should be transformed
+			    | into one of the above, or designated as a FOLDER. However...
+			    | BOOLEAN: will form an enumerated concept (to be expected)
+			    | DATETIME: will form a start date or end date of an observation fact or visit
+			    | DECIMAL and INTEGER: are continuous variables and should either be stored as data
+			    |                      or recorded as would a labtest result.
+			    | TEXT: are another form of unrestricted data and should either be stored as data
+			    |       or recorded as would a labtest result.
+			    |       Could be stored within an observation fact or within patient_dimension?
+			    | LOCALE: will probably be ignored.
+			    | DATA: Should be raised as a warning / error if encountered.           
+			    +-->
+			<xs:enumeration value="BOOLEAN"/>
+			<xs:enumeration value="DATA"/>
+			<xs:enumeration value="DATETIME"/>
+			<xs:enumeration value="DECIMAL"/>
+			<xs:enumeration value="INTEGER"/>
+			<xs:enumeration value="TEXT"/>
+			<xs:enumeration value="LOCALE"/>
+			<xs:enumeration value="BINARY"/>
+		</xs:restriction>	
+	</xs:simpleType>
+	
+	<!--+
+	    | On the whole, Codes are attributable to bottom leaf variables only.
+	    +-->
+	<xs:simpleType name="Code">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="5"/>
+			<xs:maxLength value="50"/>		
+		</xs:restriction>
+	</xs:simpleType>
+	
+	<xs:complexType name="Container">
+		<xs:sequence>
+			<xs:element type="Folder" name="folder" maxOccurs="unbounded" minOccurs="1" />
+		</xs:sequence>
+		<xs:attribute type="xs:string" name="name" use="required"/>
+	</xs:complexType>
+	
+	<xs:complexType name="Folder">
+		<xs:sequence>
+			<xs:element type="Folder" name="folder" maxOccurs="unbounded" minOccurs="0" />
+			<xs:element type="Variable" name="variable" maxOccurs="unbounded" minOccurs="0" />
+		</xs:sequence>
+		<xs:attribute type="xs:string" name="name" use="required"/>
+		<xs:attribute type="xs:string" name="description" use="optional"/>
+		<xs:attribute type="Code" name="code" use="optional"/>
+	</xs:complexType>
+	
+	<xs:simpleType name="FactTableColumn">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="5"/>
+			<xs:maxLength value="50"/>		
+		</xs:restriction>
+	</xs:simpleType>
+	
+	<xs:simpleType name="TableName">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="5"/>
+			<xs:maxLength value="50"/>		
+		</xs:restriction>
+	</xs:simpleType>
+	
+	<xs:simpleType name="ColumnName">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="5"/>
+			<xs:maxLength value="50"/>		
+		</xs:restriction>
+	</xs:simpleType>
+	
+	<xs:simpleType name="ColumnDataType">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="50"/>		
+		</xs:restriction>
+	</xs:simpleType>
+	
+	<xs:simpleType name="Operator">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="10"/>		
+		</xs:restriction>
+	</xs:simpleType>
+	
+	<xs:simpleType name="DimCode">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="5"/>
+			<xs:maxLength value="700"/>		
+		</xs:restriction>
+	</xs:simpleType>
+	
+	<xs:simpleType name="ValueTypeCode">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="3"/>
+			<xs:maxLength value="50"/>		
+		</xs:restriction>
+	</xs:simpleType>
+	
+	<xs:simpleType name="ModifierAppliedPath">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="5"/>
+			<xs:maxLength value="700"/>		
+		</xs:restriction>
+	</xs:simpleType>
+	
+	<xs:simpleType name="ModifierExclusionCode">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="25"/>		
+		</xs:restriction>
+	</xs:simpleType>
+	
+		<xs:simpleType name="Synonym">
+		<xs:restriction base="xs:string">		
+			<xs:enumeration value="Y"/>
+			<xs:enumeration value="N"/>
+		</xs:restriction>	
+	</xs:simpleType>
+	
+</xs:schema>

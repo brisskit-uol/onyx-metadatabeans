@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="http://brisskit.org/xml/onyxmetadata/v1.0/om"
+	xmlns="http://brisskit.org/xml/onyxmetadata/v1.0/om"
+	attributeFormDefault="unqualified" elementFormDefault="qualified"
+	xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:element name="source" type="sourceType" />
+	<xs:complexType name="variableType">
+		<xs:sequence>
+			<xs:element type="xs:string" name="name" />
+			<xs:element type="xs:string" name="label" maxOccurs="1"
+				minOccurs="0" />
+			<xs:element type="xs:string" name="type" maxOccurs="1"
+				minOccurs="0" />
+			<xs:element type="xs:boolean" name="repeatable" maxOccurs="1"
+				minOccurs="0" />
+			<xs:element type="restrictionType" name="restriction"
+				maxOccurs="unbounded" minOccurs="0" />
+			<xs:element type="variableType" name="variable" maxOccurs="unbounded"
+				minOccurs="0" />
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="restrictionType">
+		<xs:sequence>
+			<xs:element type="xs:string" name="enum" maxOccurs="unbounded"
+				minOccurs="1" />
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="sourceType">
+		<xs:sequence>
+			<xs:element type="xs:string" name="name" />
+			<xs:element type="entityType" name="entity" maxOccurs="1"
+				minOccurs="0" />
+			<xs:element type="stageType" name="stage" maxOccurs="1"
+				minOccurs="0" />
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="entityType">
+		<xs:sequence>
+			<xs:element type="xs:string" name="name" />
+			<xs:element type="variableType" name="variable" maxOccurs="unbounded"
+				minOccurs="0" />
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="stageType">
+		<xs:sequence>
+			<xs:element type="xs:string" name="name" />
+			<xs:element type="variableType" name="variable" maxOccurs="unbounded"
+				minOccurs="0" />
+			<xs:element type="sectionType" name="section" maxOccurs="unbounded"
+				minOccurs="0" />
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="sectionType">
+		<xs:sequence>
+			<xs:element type="xs:string" name="name" />
+			<xs:element type="questionType" name="question" maxOccurs="unbounded"
+				minOccurs="0" />
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="questionType">
+		<xs:sequence>
+			<xs:element type="xs:string" name="name" />
+			<xs:element type="xs:string" name="label" />
+			<xs:element type="variableType" name="variable" maxOccurs="unbounded"
+				minOccurs="0" />
+			<xs:element type="questionType" name="question" maxOccurs="unbounded"
+				minOccurs="0" />
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>
