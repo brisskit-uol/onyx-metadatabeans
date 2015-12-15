@@ -78,6 +78,17 @@ The refinement also included emitting further enumerated concepts.</description>
 				</configuration>
 			</plugin>
 		</plugins>
+		
+		<resources>
+      		<resource>
+        		<directory>${basedir}</directory>
+        		<targetPath>./</targetPath>
+        		<includes>
+          			<include>licence.doc</include>
+        		</includes>
+      		</resource>
+    	</resources>
+		
 	</build>
 
 	<reporting>
